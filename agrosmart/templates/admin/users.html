@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+
+{% block content %}
+<main class="page-shell">
+    <section class="hero hero-tight">
+        <p class="eyebrow">Admin</p>
+        <h1>Users</h1>
+        <p class="subtitle">Toggle admin access for users.</p>
+        <p class="muted"><a href="{{ url_for('admin.dashboard') }}">Back to admin</a></p>
+    </section>
+
+    <section class="panel info-panel">
+        <label>Search
+            <span class="hint">Filter by name or email.</span>
+            <input id="tableFilter" type="text" placeholder="Type to filter...">
+        </label>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Time</th>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Admin</th>
+                    <th>Action</th>
+                    <th>Details</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for u in rows %}
+                    <tr class="filter-row">
+                        <td>{{ u.created_at }}</td>
+                        <td>{{ u.name }}</td>
+                        <td>{{ u.email }}</td>
+                        <td>{{ 'Yes' if u.is_admin else 'No' }}</td>
+                        <td>
+                            <form method="post" action="{{ url_for('admin.toggle_admin', user_id=u.id) }}">
+                                <button class="btn btn-ghost" type="submit">Toggle</button>
+                            </form>
+                        </td>
+                        <td><a class="btn btn-ghost" href="{{ url_for('admin.user_detail', user_id=u.id) }}">View</a></td>
+                    </tr>
+                {% else %}
+                    <tr><td colspan="6" class="muted">No users found.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </section>
+</main>
+<script>
+(() => {
+  const input = document.getElementById('tableFilter');
+  const rows = Array.from(document.querySelectorAll('tr.filter-row'));
+  if (!input) return;
+  const apply = () => {
+    const q = (input.value || '').trim().toLowerCase();
+    for (const r of rows) {
+      const t = (r.textContent || '').toLowerCase();
+      r.style.display = (!q || t.includes(q)) ? '' : 'none';
+    }
+  };
+  input.addEventListener('input', apply);
+})();
+</script>
+{% endblock %}

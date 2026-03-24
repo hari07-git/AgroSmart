@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+
+{% block content %}
+<main class="page-shell">
+    <section class="hero hero-tight">
+        <p class="eyebrow">History</p>
+        <h1>Disease predictions</h1>
+        <p class="subtitle">Latest saved disease predictions for your account.</p>
+        <p class="muted"><a href="{{ url_for('services.disease') }}">Back to disease tool</a></p>
+    </section>
+
+    <section class="panel info-panel">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="flash-stack">
+                    {% for category, message in messages %}
+                        <div class="flash flash-{{ category }}">{{ message }}</div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        {% if rows %}
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Time</th>
+                        <th>Image</th>
+                        <th>Disease</th>
+                        <th>Confidence</th>
+                        <th>Model</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in rows %}
+                        <tr>
+                            <td>{{ row.created_at }}</td>
+                            <td><a href="{{ url_for('services.disease_image', filename=row.image_filename) }}">{{ row.image_filename }}</a></td>
+                            <td>{{ row.disease }}</td>
+                            <td>{{ row.confidence }}</td>
+                            <td>{{ row.model_version }}</td>
+                            <td>
+                                <form method="post" action="{{ url_for('services.disease_delete', pred_id=row.id) }}">
+                                    <button class="btn btn-ghost" type="submit">Delete</button>
+                                </form>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p class="empty-state">No saved predictions yet.</p>
+        {% endif %}
+    </section>
+</main>
+{% endblock %}

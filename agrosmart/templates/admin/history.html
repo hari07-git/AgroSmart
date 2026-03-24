@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+
+{% block content %}
+<main class="page-shell">
+    <section class="hero hero-tight">
+        <p class="eyebrow">Admin</p>
+        <h1>System history</h1>
+        <p class="subtitle">Latest crop, fertilizer, and disease records.</p>
+        <p class="muted"><a href="{{ url_for('admin.dashboard') }}">Back to admin</a></p>
+    </section>
+
+    <section class="panel info-panel">
+        <h2>Crop predictions</h2>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Time</th>
+                    <th>Crop</th>
+                    <th>Season</th>
+                    <th>User</th>
+                    <th>Model</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for pred, soil in crop_rows %}
+                    <tr>
+                        <td>{{ pred.created_at }}</td>
+                        <td>{{ pred.predicted_crop }}</td>
+                        <td>{{ soil.season }}</td>
+                        <td>{{ soil.user_id }}</td>
+                        <td>{{ pred.model_version }}</td>
+                        <td>
+                            <form method="post" action="{{ url_for('admin.delete_crop', prediction_id=pred.id) }}">
+                                <button class="btn btn-ghost" type="submit">Delete</button>
+                            </form>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </section>
+
+    <section class="panel info-panel" style="margin-top:16px;">
+        <h2>Fertilizer</h2>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Time</th>
+                    <th>Crop</th>
+                    <th>User</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in fert_rows %}
+                    <tr>
+                        <td>{{ row.created_at }}</td>
+                        <td>{{ row.crop_name }}</td>
+                        <td>{{ row.user_id }}</td>
+                        <td>
+                            <form method="post" action="{{ url_for('admin.delete_fertilizer', rec_id=row.id) }}">
+                                <button class="btn btn-ghost" type="submit">Delete</button>
+                            </form>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </section>
+
+    <section class="panel info-panel" style="margin-top:16px;">
+        <h2>Disease</h2>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Time</th>
+                    <th>Disease</th>
+                    <th>Image</th>
+                    <th>User</th>
+                    <th>Model</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in disease_rows %}
+                    <tr>
+                        <td>{{ row.created_at }}</td>
+                        <td>{{ row.disease }}</td>
+                        <td>{{ row.image_filename }}</td>
+                        <td>{{ row.user_id }}</td>
+                        <td>{{ row.model_version }}</td>
+                        <td>
+                            <form method="post" action="{{ url_for('admin.delete_disease', pred_id=row.id) }}">
+                                <button class="btn btn-ghost" type="submit">Delete</button>
+                            </form>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </section>
+</main>
+{% endblock %}

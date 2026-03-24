@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block content %}
+<main class="page-shell auth-shell">
+    <section class="panel auth-panel">
+        <h1>Login required</h1>
+        <p class="subtitle">Please login to continue.</p>
+        <div class="cta-row">
+            <a class="btn btn-ghost" href="{{ url_for('auth.login') }}">User login</a>
+            <a class="btn btn-ghost" href="{{ url_for('admin_auth.login') }}">Admin login</a>
+        </div>
+    </section>
+</main>
+{% endblock %}
+

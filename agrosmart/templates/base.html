@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AgroSmart</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <header class="topbar">
+        <div class="topbar-inner">
+            <a class="brand" href="{{ url_for('main.home') }}">
+                <img class="brand-logo" src="{{ url_for('static', filename='brand/logo.svg') }}" alt="AgroSmart">
+            </a>
+
+            <nav class="topnav">
+                {% if session.get("user_id") %}
+                    <a class="nav-link" href="{{ url_for('main.dashboard') }}">{{ t('nav_dashboard') }}</a>
+                    <a class="nav-link" href="{{ url_for('auth.profile') }}">{{ t('nav_profile') }}</a>
+                    {% if is_admin %}
+                        <a class="nav-link" href="{{ url_for('admin.dashboard') }}">{{ t('nav_admin') }}</a>
+                    {% endif %}
+                {% else %}
+                    <a class="nav-link" href="{{ url_for('auth.login') }}">{{ t('nav_login') }}</a>
+                    <a class="btn btn-small" href="{{ url_for('auth.register') }}">Register</a>
+                {% endif %}
+            </nav>
+
+            <form class="lang-form" method="get" action="">
+                <label class="lang-label">
+                    <span>{{ t('lang_label') }}</span>
+                    <select name="lang" onchange="this.form.submit()">
+                        {% for code, label in supported_langs.items() %}
+                            <option value="{{ code }}" {% if code == lang %}selected{% endif %}>{{ label }}</option>
+                        {% endfor %}
+                    </select>
+                </label>
+            </form>
+        </div>
+    </header>
+    {% block content %}{% endblock %}
+    <footer class="footer">
+        <div class="footer-inner">
+            <p class="muted">AgroSmart | Crop recommendation, fertilizer guidance, disease detection.</p>
+            <p class="muted">Built for mini-project submission. Data/model accuracy depends on your trained dataset.</p>
+        </div>
+    </footer>
+    <script src="{{ url_for('static', filename='voice.js') }}"></script>
+    <script src="{{ url_for('static', filename='weather.js') }}"></script>
+</body>
+</html>

@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+
+{% block content %}
+<main class="page-shell">
+    <section class="hero hero-tight">
+        <p class="eyebrow">Disease Detection</p>
+        <h1>{{ t('disease_title') }}</h1>
+        <p class="subtitle">Upload an image of an infected leaf to detect disease and view treatment suggestions.</p>
+        <p class="muted"><a href="{{ url_for('services.disease_history') }}">View history</a></p>
+        <div class="cta-row">
+            <button class="btn btn-ghost" type="button" data-voice="speak" data-voice-target="#voice-disease">{{ t('voice_speak') }}</button>
+            <button class="btn btn-ghost" type="button" data-voice="stop">{{ t('voice_stop') }}</button>
+        </div>
+    </section>
+
+    <section class="grid">
+        <div id="voice-disease" class="sr-only">
+            Upload a clear photo of an infected leaf. Then press Detect Disease to view the prediction, treatment, and prevention.
+        </div>
+        <form class="panel form-panel" action="{{ url_for('services.disease_post') }}" method="post" enctype="multipart/form-data">
+            <h2>Leaf Image</h2>
+
+            {% if model %}
+                <p class="muted">Active model: {{ model.version }}</p>
+            {% else %}
+                <p class="muted">No active disease model. Results may use fallback hints.</p>
+            {% endif %}
+
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    <div class="flash-stack">
+                        {% for category, message in messages %}
+                            <div class="flash flash-{{ category }}">{{ message }}</div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            {% endwith %}
+
+            <label>Image file
+                <span class="hint">Upload a clear photo of a single infected leaf (jpg/png). Use good lighting.</span>
+                <input type="file" name="leaf_image" accept=".jpg,.jpeg,.png" required>
+            </label>
+            <button type="submit">Detect Disease</button>
+        </form>
+
+        <section class="panel result-panel">
+            <h2>Result</h2>
+
+            {% if result %}
+                <div class="result-block">
+                    <h3>Uploaded image</h3>
+                    {% if result.image_url %}
+                        <img class="preview" src="{{ result.image_url }}" alt="Uploaded leaf image">
+                    {% else %}
+                        <p class="muted">Preview unavailable.</p>
+                    {% endif %}
+                </div>
+
+                <div class="result-block">
+                    <h3>Prediction</h3>
+                    <p><strong>Status:</strong> {{ result.status }}</p>
+                    <p><strong>Disease:</strong> {{ result.disease }}</p>
+                    <p><strong>Confidence:</strong> {{ result.confidence }}</p>
+                    {% if result.model_version %}
+                        <p><strong>Model:</strong> {{ result.model_version }}</p>
+                    {% endif %}
+                    {% if result.note %}
+                        <p class="muted">{{ result.note }}</p>
+                    {% endif %}
+                </div>
+
+                <div class="result-block">
+                    <h3>Top predictions</h3>
+                    {% if result.top_predictions %}
+                        <ul>
+                            {% for item in result.top_predictions %}
+                                <li>{{ item.label }} ({{ '%.2f'|format(item.prob) }})</li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <p class="muted">Top predictions unavailable for this model.</p>
+                    {% endif %}
+                </div>
+
+                <div class="result-block">
+                    <h3>Treatment</h3>
+                    <p>{{ result.treatment }}</p>
+                </div>
+
+                <div class="result-block">
+                    <h3>Prevention</h3>
+                    <p>{{ result.prevention }}</p>
+                </div>
+
+                <p class="muted">{{ result.note }}</p>
+            {% else %}
+                <p class="empty-state">Upload an image to get a disease prediction.</p>
+            {% endif %}
+        </section>
+    </section>
+</main>
+{% endblock %}

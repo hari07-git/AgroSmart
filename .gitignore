@@ -1,0 +1,17 @@
+.venv/
+__pycache__/
+*.pyc
+.DS_Store
+uploads/
+agrosmart.sqlite3
+models/*.joblib
+models/*.keras
+models/*.labels.json
+.pytest_cache/
+.env
+
+# Local datasets / generated artifacts
+data/agrosmart_*dataset/
+docs/disease_eval*.json
+docs/dataset_preview.png
+AgroSmart_Full_Code.docx

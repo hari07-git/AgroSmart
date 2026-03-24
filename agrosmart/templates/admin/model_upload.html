@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block content %}
+<main class="page-shell auth-shell">
+    <section class="panel auth-panel">
+        <h1>Upload model</h1>
+        <p class="subtitle">Crop model: `.joblib` | Disease model: `.keras` or `.joblib` (+ optional `.json` labels).</p>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="flash-stack">
+                    {% for category, message in messages %}
+                        <div class="flash flash-{{ category }}">{{ message }}</div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        <form method="post" action="{{ url_for('admin.model_upload_post') }}" enctype="multipart/form-data" class="form">
+            <label>Kind
+                <select name="kind" required>
+                    <option value="crop">crop</option>
+                    <option value="disease">disease</option>
+                </select>
+            </label>
+            <label>Version
+                <input type="text" name="version" placeholder="v1, 2026-03-14, rf-v2..." required>
+            </label>
+            <label>Model file
+                <input type="file" name="model_file" required>
+            </label>
+            <label>Labels file (disease only, optional)
+                <input type="file" name="labels_file">
+            </label>
+            <button class="btn" type="submit">Upload</button>
+        </form>
+
+        <p class="muted"><a href="{{ url_for('admin.models') }}">Back to models</a></p>
+    </section>
+</main>
+{% endblock %}

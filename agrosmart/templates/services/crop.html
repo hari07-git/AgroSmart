@@ -1,0 +1,109 @@
+{% extends "base.html" %}
+
+{% block content %}
+<main class="page-shell">
+    <section class="hero hero-tight">
+        <p class="eyebrow">Crop Recommendation</p>
+        <h1>{{ t('crop_title') }}</h1>
+        <p class="subtitle">Enter soil nutrients, weather conditions, and season. Results are saved in your history.</p>
+        <p class="muted"><a href="{{ url_for('services.crop_history') }}">View history</a></p>
+        <div class="cta-row">
+            <button class="btn btn-ghost" type="button" data-voice="speak" data-voice-target="#voice-crop">{{ t('voice_speak') }}</button>
+            <button class="btn btn-ghost" type="button" data-voice="stop">{{ t('voice_stop') }}</button>
+        </div>
+    </section>
+
+    <section class="grid">
+        <div id="voice-crop" class="sr-only">
+            Enter Nitrogen, Phosphorus, Potassium, temperature, humidity, rainfall, soil pH, and season. Then press Predict Crop to get a recommendation.
+        </div>
+        <form class="panel form-panel" action="{{ url_for('services.crop_post') }}" method="post">
+            <h2>Soil + Weather Inputs</h2>
+            <div class="cta-row">
+                <button class="btn btn-ghost" type="button" data-weather="autofill">Auto-fill weather</button>
+                <span class="muted" data-weather="note"></span>
+            </div>
+
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    <div class="flash-stack">
+                        {% for category, message in messages %}
+                            <div class="flash flash-{{ category }}">{{ message }}</div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            {% endwith %}
+
+            <div class="field-grid">
+                <label>Nitrogen (N)
+                    <span class="hint">Soil nitrogen level from soil test (typical: 0-200).</span>
+                    <input type="number" step="0.1" min="0" max="200" name="nitrogen" required>
+                </label>
+                <label>Phosphorus (P)
+                    <span class="hint">Soil phosphorus level (typical: 0-200).</span>
+                    <input type="number" step="0.1" min="0" max="200" name="phosphorus" required>
+                </label>
+                <label>Potassium (K)
+                    <span class="hint">Soil potassium level (typical: 0-200).</span>
+                    <input type="number" step="0.1" min="0" max="200" name="potassium" required>
+                </label>
+                <label>Temperature (°C)
+                    <span class="hint">Average temperature at your location (typical: 10-45).</span>
+                    <input type="number" step="0.1" min="-5" max="60" name="temperature" required>
+                </label>
+                <label>Humidity (%)
+                    <span class="hint">Relative humidity (0-100).</span>
+                    <input type="number" step="0.1" min="0" max="100" name="humidity" required>
+                </label>
+                <label>Rainfall (mm)
+                    <span class="hint">Recent/seasonal rainfall estimate (0-1000).</span>
+                    <input type="number" step="0.1" min="0" max="1000" name="rainfall" required>
+                </label>
+                <label>Soil pH
+                    <span class="hint">Acidity/alkalinity of soil (0-14). Most crops prefer ~5.5-7.5.</span>
+                    <input type="number" step="0.1" min="0" max="14" name="ph" required>
+                </label>
+                <label>Season
+                    <span class="hint">Select cropping season to improve prediction.</span>
+                    <select name="season" required>
+                        <option value="Kharif">Kharif</option>
+                        <option value="Rabi">Rabi</option>
+                        <option value="Summer">Summer</option>
+                        <option value="Annual">Annual</option>
+                    </select>
+                </label>
+            </div>
+
+            <button type="submit">Predict Crop</button>
+        </form>
+
+        <section class="panel result-panel">
+            <h2>Result</h2>
+
+            {% if result %}
+                <div class="result-block">
+                    <h3>Recommended Crop</h3>
+                    <p class="result-title">{{ result.ml.predicted_crop }}</p>
+                    {% if result.ml.used_model %}
+                        <p class="muted">Model: {{ result.ml.model_version }}{% if result.ml.confidence %} (confidence {{ '%.2f'|format(result.ml.confidence) }}){% endif %}</p>
+                    {% else %}
+                        <p class="muted">Model not trained yet. Showing rule-based recommendation.</p>
+                    {% endif %}
+                    <p>{{ result.recommended_crop.reason }}</p>
+                </div>
+
+                <div class="result-block">
+                    <h3>Top Matches</h3>
+                    <ul>
+                        {% for item in result.top_matches %}
+                            <li>{{ item.name }} - score {{ item.score }} - {{ item.summary }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% else %}
+                <p class="empty-state">Submit inputs to get a crop prediction.</p>
+            {% endif %}
+        </section>
+    </section>
+</main>
+{% endblock %}

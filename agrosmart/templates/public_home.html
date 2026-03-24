@@ -1,0 +1,133 @@
+{% extends "base.html" %}
+
+{% block content %}
+<main class="page-shell">
+    <section class="home-hero">
+        <div class="home-hero-copy reveal">
+            <p class="eyebrow">AgroSmart</p>
+            <h1>Decisions for the farm, in minutes.</h1>
+            <p class="subtitle">A single platform for crop recommendation, fertilizer guidance, and leaf disease detection, with history, exports, and admin model management.</p>
+
+            <div class="cta-row">
+                <a class="btn" href="{{ url_for('auth.register') }}">Create account</a>
+                <a class="btn btn-ghost" href="{{ url_for('auth.login') }}">Login</a>
+                <a class="btn btn-ghost" href="{{ url_for('main.dashboard') }}">Open dashboard</a>
+            </div>
+
+            <div class="pill-row">
+                <span class="pill">Multi-language UI</span>
+                <span class="pill">Voice guidance</span>
+                <span class="pill">CSV/PDF exports</span>
+                <span class="pill">Weather auto-fill</span>
+            </div>
+        </div>
+
+        <div class="home-hero-art reveal">
+            <div class="hero-art-card">
+                <p class="hero-art-title">Quick preview</p>
+                <div class="stat-grid">
+                    <div class="stat">
+                        <p class="stat-k">Modules</p>
+                        <p class="stat-v">3</p>
+                        <p class="stat-h">Crop, Fertilizer, Disease</p>
+                    </div>
+                    <div class="stat">
+                        <p class="stat-k">Exports</p>
+                        <p class="stat-v">CSV + PDF</p>
+                        <p class="stat-h">Per member history</p>
+                    </div>
+                    <div class="stat">
+                        <p class="stat-k">Admin</p>
+                        <p class="stat-v">Models</p>
+                        <p class="stat-h">Upload, version, activate</p>
+                    </div>
+                    <div class="stat">
+                        <p class="stat-k">OTP</p>
+                        <p class="stat-v">Email</p>
+                        <p class="stat-h">Secure registration</p>
+                    </div>
+                </div>
+                <div class="hero-art-line"></div>
+                <div class="hero-art-steps">
+                    <div class="step">
+                        <p class="step-n">1</p>
+                        <p class="step-t">Fill soil and weather</p>
+                    </div>
+                    <div class="step">
+                        <p class="step-n">2</p>
+                        <p class="step-t">Get recommendations</p>
+                    </div>
+                    <div class="step">
+                        <p class="step-n">3</p>
+                        <p class="step-t">Save and export results</p>
+                    </div>
+                </div>
+            </div>
+            <div class="hero-orb orb-1"></div>
+            <div class="hero-orb orb-2"></div>
+        </div>
+    </section>
+
+    <section class="panel info-panel reveal">
+        <div class="section-head">
+            <h2>What you can do</h2>
+            <p class="muted">Built for demo clarity and real usage: results are stored, viewable, and exportable.</p>
+        </div>
+        <div class="feature-grid">
+            <a class="feature card-link" href="{{ url_for('services.crop') }}">
+                <div class="feature-ic">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2c5.5 0 10 4.5 10 10s-4.5 10-10 10S2 17.5 2 12 6.5 2 12 2Zm-1 5v10h2V7h-2Zm-4 5v2h10v-2H7Z"/></svg>
+                </div>
+                <h3>Crop Recommendation</h3>
+                <p>Enter NPK, pH, season, and weather values to get a best-fit crop with confidence and history.</p>
+                <span class="feature-cta">Try crop</span>
+            </a>
+            <a class="feature card-link" href="{{ url_for('services.fertilizer') }}">
+                <div class="feature-ic">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2 3 7v10l9 5 9-5V7l-9-5Zm0 2.2 6.8 3.8L12 11.8 5.2 8 12 4.2ZM5 10.2l6 3.4v6.8l-6-3.3v-6.9Zm14 0v6.9l-6 3.3v-6.8l6-3.4Z"/></svg>
+                </div>
+                <h3>Fertilizer Guidance</h3>
+                <p>Get nutrient-focused recommendations based on your crop and current NPK levels, with clear instructions.</p>
+                <span class="feature-cta">Try fertilizer</span>
+            </a>
+            <a class="feature card-link" href="{{ url_for('services.disease') }}">
+                <div class="feature-ic">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3c4.4 0 8 3.6 8 8 0 5.5-5.8 9.5-8 10-2.2-.5-8-4.5-8-10 0-4.4 3.6-8 8-8Zm0 2c-3.3 0-6 2.7-6 6 0 3.9 4.2 7.1 6 7.8 1.8-.7 6-3.9 6-7.8 0-3.3-2.7-6-6-6Zm-1 3h2v2h-2V8Zm0 4h2v5h-2v-5Z"/></svg>
+                </div>
+                <h3>Disease Detection</h3>
+                <p>Upload a leaf image, see the preview, prediction, top classes, and treatment/prevention suggestions.</p>
+                <span class="feature-cta">Try disease</span>
+            </a>
+        </div>
+    </section>
+
+    <section class="home-split reveal">
+        <div class="panel info-panel">
+            <h2>Professional workflow</h2>
+            <p class="muted">Designed for clear project demonstration: user flow, admin flow, data storage, model management.</p>
+            <div class="timeline">
+                <div class="titem">
+                    <p class="tbadge">Member</p>
+                    <p class="ttext">Register (OTP), set profile location, run services, view history, export report.</p>
+                </div>
+                <div class="titem">
+                    <p class="tbadge">Admin</p>
+                    <p class="ttext">Login, upload model versions, activate models, manage users and exports.</p>
+                </div>
+                <div class="titem">
+                    <p class="tbadge">ML</p>
+                    <p class="ttext">Train and evaluate models with confusion matrix and precision/recall report.</p>
+                </div>
+            </div>
+        </div>
+        <div class="panel info-panel home-note">
+            <h2>For your report</h2>
+            <p class="muted">Include screenshots of the dashboard, one successful prediction per module, admin model upload/activation, and the evaluation report.</p>
+            <div class="cta-row">
+                <a class="btn btn-ghost" href="{{ url_for('auth.register') }}">Start now</a>
+                <a class="btn btn-ghost" href="{{ url_for('admin_auth.login') }}">Admin login</a>
+            </div>
+        </div>
+    </section>
+</main>
+{% endblock %}

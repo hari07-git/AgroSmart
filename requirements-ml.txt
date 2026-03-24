@@ -1,0 +1,9 @@
+numpy==2.2.4
+pandas==2.2.3
+scikit-learn==1.6.1
+joblib==1.4.2
+Pillow==11.1.0
+scikit-image==0.25.2
+
+# Optional for disease CNN training/inference (heavy install on macOS).
+# tensorflow-macos and tensorflow-metal are typical on Apple Silicon, but versions vary.

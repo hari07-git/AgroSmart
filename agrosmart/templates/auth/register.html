@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block content %}
+<main class="page-shell auth-shell">
+    <section class="panel auth-panel">
+        <h1>Create account</h1>
+        <p class="subtitle">Start using AgroSmart services.</p>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="flash-stack">
+                    {% for category, message in messages %}
+                        <div class="flash flash-{{ category }}">{{ message }}</div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        <form method="post" action="{{ url_for('auth.register_post') }}" class="form" enctype="multipart/form-data">
+            <label>Name<input type="text" name="name" required></label>
+            <label>Email<input type="email" name="email" required></label>
+            <label>Password (min 6 chars)<input type="password" name="password" minlength="6" required></label>
+            <label>Confirm password<input type="password" name="password_confirm" minlength="6" required></label>
+            <label>Profile image (optional)
+                <input type="file" name="profile_image" accept=".jpg,.jpeg,.png">
+            </label>
+            <button class="btn" type="submit">Register</button>
+        </form>
+
+        <p class="muted">Already have an account? <a href="{{ url_for('auth.login') }}">Login here</a>.</p>
+    </section>
+</main>
+{% endblock %}

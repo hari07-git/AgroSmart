@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+
+{% block content %}
+<main class="page-shell">
+    <section class="hero hero-tight">
+        <p class="eyebrow">Admin</p>
+        <h1>Model management</h1>
+        <p class="subtitle">Upload models, activate a version, and keep a history of model artifacts.</p>
+        <div class="cta-row">
+            <a class="btn btn-ghost" href="{{ url_for('admin.model_upload') }}">Upload model</a>
+            <a class="btn btn-ghost" href="{{ url_for('admin.dashboard') }}">Back</a>
+        </div>
+    </section>
+
+    <section class="panel info-panel">
+        <label>Search
+            <span class="hint">Filter by kind, version, or filename.</span>
+            <input id="tableFilter" type="text" placeholder="Type to filter...">
+        </label>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Time</th>
+                    <th>Kind</th>
+                    <th>Version</th>
+                    <th>File</th>
+                    <th>Labels</th>
+                    <th>Active</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for m in rows %}
+                    <tr class="filter-row">
+                        <td>{{ m.uploaded_at }}</td>
+                        <td>{{ m.kind }}</td>
+                        <td>{{ m.version }}</td>
+                        <td>{{ m.filename }}</td>
+                        <td>{{ m.labels_filename or '' }}</td>
+                        <td>{{ 'Yes' if m.active else 'No' }}</td>
+                        <td>
+                            <div class="cta-row">
+                                <form method="post" action="{{ url_for('admin.model_activate', model_id=m.id) }}">
+                                    <button class="btn btn-ghost" type="submit">Activate</button>
+                                </form>
+                                <form method="post" action="{{ url_for('admin.model_delete', model_id=m.id) }}">
+                                    <button class="btn btn-ghost" type="submit">Delete</button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                {% else %}
+                    <tr><td colspan="7" class="muted">No models uploaded yet.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </section>
+</main>
+<script>
+(() => {
+  const input = document.getElementById('tableFilter');
+  const rows = Array.from(document.querySelectorAll('tr.filter-row'));
+  if (!input) return;
+  const apply = () => {
+    const q = (input.value || '').trim().toLowerCase();
+    for (const r of rows) {
+      const t = (r.textContent || '').toLowerCase();
+      r.style.display = (!q || t.includes(q)) ? '' : 'none';
+    }
+  };
+  input.addEventListener('input', apply);
+})();
+</script>
+{% endblock %}

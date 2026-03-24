@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+
+{% block content %}
+<main class="page-shell">
+    <section class="hero">
+        <p class="eyebrow">Mini Project Starter</p>
+        <h1>AgroSmart</h1>
+        <p class="subtitle">Smart crop advisory and disease detection system for farmers.</p>
+    </section>
+
+    <section class="grid">
+        <form class="panel form-panel" action="/analyze" method="post" enctype="multipart/form-data">
+            <h2>Field Inputs</h2>
+
+            <div class="field-grid">
+                <label>Nitrogen (N)<input type="number" step="0.1" name="nitrogen" required></label>
+                <label>Phosphorus (P)<input type="number" step="0.1" name="phosphorus" required></label>
+                <label>Potassium (K)<input type="number" step="0.1" name="potassium" required></label>
+                <label>Temperature (°C)<input type="number" step="0.1" name="temperature" required></label>
+                <label>Humidity (%)<input type="number" step="0.1" name="humidity" required></label>
+                <label>Rainfall (mm)<input type="number" step="0.1" name="rainfall" required></label>
+                <label>Soil pH<input type="number" step="0.1" name="ph" required></label>
+                <label>Season
+                    <select name="season" required>
+                        <option value="Kharif">Kharif</option>
+                        <option value="Rabi">Rabi</option>
+                        <option value="Summer">Summer</option>
+                        <option value="Annual">Annual</option>
+                    </select>
+                </label>
+                <label>Preferred Crop (optional)<input type="text" name="crop_name" placeholder="Tomato, Rice, Cotton..."></label>
+                <label>Leaf Image (optional)<input type="file" name="leaf_image" accept=".jpg,.jpeg,.png"></label>
+            </div>
+
+            <button type="submit">Analyze Farm Data</button>
+        </form>
+
+        <section class="panel result-panel">
+            <h2>Results</h2>
+
+            {% if result %}
+                <div class="result-block">
+                    <h3>Crop Recommendation</h3>
+                    <p class="result-title">{{ result.advisory.recommended_crop.name }}</p>
+                    <p>{{ result.advisory.recommended_crop.reason }}</p>
+                </div>
+
+                <div class="result-block">
+                    <h3>Top Matches</h3>
+                    <ul>
+                        {% for item in result.advisory.top_matches %}
+                            <li>{{ item.name }} - score {{ item.score }} - {{ item.summary }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+
+                <div class="result-block">
+                    <h3>Fertilizer Guidance</h3>
+                    <p><strong>Crop:</strong> {{ result.advisory.fertilizer_plan.crop }}</p>
+                    <p><strong>Focus:</strong> {{ result.advisory.fertilizer_plan.focus }}</p>
+                    <p>{{ result.advisory.fertilizer_plan.message }}</p>
+                </div>
+
+                <div class="result-block">
+                    <h3>Disease Module</h3>
+                    {% if result.disease %}
+                        <p><strong>Status:</strong> {{ result.disease.status }}</p>
+                        <p><strong>Disease:</strong> {{ result.disease.disease }}</p>
+                        <p><strong>Confidence:</strong> {{ result.disease.confidence }}</p>
+                        <p><strong>Treatment:</strong> {{ result.disease.treatment }}</p>
+                        <p><strong>Prevention:</strong> {{ result.disease.prevention }}</p>
+                        <p>{{ result.disease.note }}</p>
+                    {% else %}
+                        <p>No image uploaded. The disease upload pipeline is ready when you want to test it.</p>
+                    {% endif %}
+                </div>
+            {% else %}
+                <p class="empty-state">Submit field values to generate crop and fertilizer recommendations. Upload a leaf image when you are ready to connect disease analysis.</p>
+            {% endif %}
+        </section>
+    </section>
+</main>
+{% endblock %}

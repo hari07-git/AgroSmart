@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+
+{% block content %}
+<main class="page-shell">
+    <section class="hero hero-tight">
+        <p class="eyebrow">Admin</p>
+        <h1>Admin dashboard</h1>
+        <p class="subtitle">Manage users and review system history.</p>
+        <div class="cta-row">
+            <a class="btn btn-ghost" href="{{ url_for('admin.users') }}">Users</a>
+            <a class="btn btn-ghost" href="{{ url_for('admin.history') }}">History</a>
+            <a class="btn btn-ghost" href="{{ url_for('admin.models') }}">Models</a>
+            <a class="btn btn-ghost" href="{{ url_for('admin.export_crop_csv') }}">Export crop CSV</a>
+            <form method="post" action="{{ url_for('admin_auth.logout') }}">
+                <button class="btn btn-ghost" type="submit">Admin logout</button>
+            </form>
+        </div>
+    </section>
+
+    <section class="card-grid">
+        <div class="card">
+            <h2>Users</h2>
+            <p class="result-title">{{ stats.users }}</p>
+        </div>
+        <div class="card">
+            <h2>Crop predictions</h2>
+            <p class="result-title">{{ stats.crop_predictions }}</p>
+        </div>
+        <div class="card">
+            <h2>Fertilizer</h2>
+            <p class="result-title">{{ stats.fertilizer_recommendations }}</p>
+        </div>
+        <div class="card">
+            <h2>Disease</h2>
+            <p class="result-title">{{ stats.disease_predictions }}</p>
+        </div>
+    </section>
+
+    <section class="panel info-panel" style="margin-top:16px;">
+        <h2>Latest users</h2>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Time</th>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Admin</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for u in latest_users %}
+                    <tr>
+                        <td>{{ u.created_at }}</td>
+                        <td>{{ u.name }}</td>
+                        <td>{{ u.email }}</td>
+                        <td>{{ 'Yes' if u.is_admin else 'No' }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </section>
+</main>
+{% endblock %}

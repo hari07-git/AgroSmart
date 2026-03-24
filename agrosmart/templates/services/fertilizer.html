@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+
+{% block content %}
+<main class="page-shell">
+    <section class="hero hero-tight">
+        <p class="eyebrow">Fertilizer Recommendation</p>
+        <h1>{{ t('fert_title') }}</h1>
+        <p class="subtitle">Enter crop name and NPK values to get fertilizer guidance. Results are saved in your history.</p>
+        <p class="muted"><a href="{{ url_for('services.fertilizer_history') }}">View history</a></p>
+        <div class="cta-row">
+            <button class="btn btn-ghost" type="button" data-voice="speak" data-voice-target="#voice-fert">{{ t('voice_speak') }}</button>
+            <button class="btn btn-ghost" type="button" data-voice="stop">{{ t('voice_stop') }}</button>
+        </div>
+    </section>
+
+    <section class="grid">
+        <div id="voice-fert" class="sr-only">
+            Enter crop name and soil N, P, K values. Then press Recommend Fertilizer to get guidance and usage instructions.
+        </div>
+        <form class="panel form-panel" action="{{ url_for('services.fertilizer_post') }}" method="post">
+            <h2>Inputs</h2>
+
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    <div class="flash-stack">
+                        {% for category, message in messages %}
+                            <div class="flash flash-{{ category }}">{{ message }}</div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            {% endwith %}
+
+            <div class="field-grid">
+                <label>Crop name
+                    <span class="hint">Crop you plan to grow (example: Rice, Tomato, Cotton).</span>
+                    <input type="text" name="crop_name" placeholder="Rice, Tomato, Cotton..." required>
+                </label>
+                <label>Nitrogen (N)
+                    <span class="hint">Soil nitrogen level (0-200).</span>
+                    <input type="number" step="0.1" min="0" max="200" name="nitrogen" required>
+                </label>
+                <label>Phosphorus (P)
+                    <span class="hint">Soil phosphorus level (0-200).</span>
+                    <input type="number" step="0.1" min="0" max="200" name="phosphorus" required>
+                </label>
+                <label>Potassium (K)
+                    <span class="hint">Soil potassium level (0-200).</span>
+                    <input type="number" step="0.1" min="0" max="200" name="potassium" required>
+                </label>
+            </div>
+
+            <button type="submit">Recommend Fertilizer</button>
+        </form>
+
+        <section class="panel result-panel">
+            <h2>Result</h2>
+
+            {% if result %}
+                <div class="result-block">
+                    <h3>Fertilizer Guidance</h3>
+                    <p><strong>Crop:</strong> {{ result.crop }}</p>
+                    <p><strong>Focus:</strong> {{ result.focus }}</p>
+                    <p><strong>Status:</strong> {{ result.status }}</p>
+                    <p><strong>Improve:</strong> {{ result.nutrients_to_improve | join(', ') }}</p>
+                    <div class="chart">
+                        <div class="bar"><span>N</span><i style="width: {{ result.nutrient_scores['Nitrogen'] }}%"></i></div>
+                        <div class="bar"><span>P</span><i style="width: {{ result.nutrient_scores['Phosphorus'] }}%"></i></div>
+                        <div class="bar"><span>K</span><i style="width: {{ result.nutrient_scores['Potassium'] }}%"></i></div>
+                    </div>
+                    <h3>Usage</h3>
+                    <ul>
+                        {% for item in result.usage_instructions %}
+                            <li>{{ item }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% else %}
+                <p class="empty-state">Submit inputs to get fertilizer recommendations.</p>
+            {% endif %}
+        </section>
+    </section>
+</main>
+{% endblock %}

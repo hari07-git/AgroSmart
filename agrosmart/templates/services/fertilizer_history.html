@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+
+{% block content %}
+<main class="page-shell">
+    <section class="hero hero-tight">
+        <p class="eyebrow">History</p>
+        <h1>Fertilizer recommendations</h1>
+        <p class="subtitle">Latest saved fertilizer guidance for your account.</p>
+        <p class="muted"><a href="{{ url_for('services.fertilizer') }}">Back to fertilizer tool</a></p>
+    </section>
+
+    <section class="panel info-panel">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="flash-stack">
+                    {% for category, message in messages %}
+                        <div class="flash flash-{{ category }}">{{ message }}</div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        {% if items %}
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Time</th>
+                        <th>Crop</th>
+                        <th>Status</th>
+                        <th>Focus</th>
+                        <th>Improve</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in items %}
+                        <tr>
+                            <td>{{ row.created_at }}</td>
+                            <td>{{ row.crop }}</td>
+                            <td>{{ row.status }}</td>
+                            <td>{{ row.focus }}</td>
+                            <td>{{ row.nutrients | join(', ') }}</td>
+                            <td>
+                                <form method="post" action="{{ url_for('services.fertilizer_delete', rec_id=row.id) }}">
+                                    <button class="btn btn-ghost" type="submit">Delete</button>
+                                </form>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p class="empty-state">No saved recommendations yet.</p>
+        {% endif %}
+    </section>
+</main>
+{% endblock %}

@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+
+{% block content %}
+<main class="page-shell">
+    <section class="hero hero-tight">
+        <p class="eyebrow">History</p>
+        <h1>Crop predictions</h1>
+        <p class="subtitle">Latest saved crop predictions for your account.</p>
+        <p class="muted"><a href="{{ url_for('services.crop') }}">Back to crop tool</a></p>
+    </section>
+
+    <section class="panel info-panel">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="flash-stack">
+                    {% for category, message in messages %}
+                        <div class="flash flash-{{ category }}">{{ message }}</div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        {% if items %}
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Time</th>
+                        <th>Crop</th>
+                        <th>Season</th>
+                        <th>Confidence</th>
+                        <th>Model</th>
+                        <th>N</th>
+                        <th>P</th>
+                        <th>K</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in items %}
+                        <tr>
+                            <td>{{ row.created_at }}</td>
+                            <td>{{ row.crop }}</td>
+                            <td>{{ row.season }}</td>
+                            <td>{{ row.confidence if row.confidence is not none else '' }}</td>
+                            <td>{{ row.model_version }}</td>
+                            <td>{{ row.n }}</td>
+                            <td>{{ row.p }}</td>
+                            <td>{{ row.k }}</td>
+                            <td>
+                                <form method="post" action="{{ url_for('services.crop_delete', prediction_id=row.id) }}">
+                                    <button class="btn btn-ghost" type="submit">Delete</button>
+                                </form>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p class="empty-state">No saved predictions yet.</p>
+        {% endif %}
+    </section>
+</main>
+{% endblock %}

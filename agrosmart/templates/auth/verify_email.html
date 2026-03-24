@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block content %}
+<main class="page-shell auth-shell">
+    <section class="panel auth-panel">
+        <h1>Verify email</h1>
+        <p class="subtitle">Enter the 6-digit OTP sent to <strong>{{ email }}</strong>.</p>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="flash-stack">
+                    {% for category, message in messages %}
+                        <div class="flash flash-{{ category }}">{{ message }}</div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        <form method="post" action="{{ url_for('auth.verify_email_post') }}" class="form">
+            <label>OTP (6 digits)
+                <input type="text" name="otp" inputmode="numeric" pattern="[0-9]{6}" maxlength="6" minlength="6" required>
+            </label>
+            <button class="btn" type="submit">Verify</button>
+        </form>
+
+        <form method="post" action="{{ url_for('auth.verify_email_resend') }}">
+            <button class="btn btn-ghost" type="submit">Resend OTP</button>
+        </form>
+
+        <p class="muted"><a href="{{ url_for('auth.logout') }}" onclick="event.preventDefault(); document.getElementById('logoutForm').submit();">Cancel</a></p>
+        <form id="logoutForm" method="post" action="{{ url_for('auth.logout') }}"></form>
+    </section>
+</main>
+{% endblock %}
+

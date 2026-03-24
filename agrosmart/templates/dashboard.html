@@ -1,0 +1,111 @@
+{% extends "base.html" %}
+
+{% block content %}
+<main class="page-shell">
+    <section class="hero hero-tight">
+        <p class="eyebrow">Dashboard</p>
+        <h1>Choose a service</h1>
+        <p class="subtitle">Start with crop prediction, fertilizer recommendations, or disease detection.</p>
+        <form action="{{ url_for('auth.logout') }}" method="post" class="logout-form">
+            <button class="btn btn-ghost" type="submit">Logout</button>
+        </form>
+    </section>
+
+    <section class="feature-grid">
+        <a class="feature card-link" href="{{ url_for('services.crop') }}">
+            <div class="feature-ic">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2c5.5 0 10 4.5 10 10s-4.5 10-10 10S2 17.5 2 12 6.5 2 12 2Zm-1 5v10h2V7h-2Zm-4 5v2h10v-2H7Z"/></svg>
+            </div>
+            <h2>Crop Recommendation</h2>
+            <p>Predict the best crop from soil + weather parameters, and save results to history.</p>
+            <span class="feature-cta">Open crop</span>
+        </a>
+        <a class="feature card-link" href="{{ url_for('services.fertilizer') }}">
+            <div class="feature-ic">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2 3 7v10l9 5 9-5V7l-9-5Zm0 2.2 6.8 3.8L12 11.8 5.2 8 12 4.2ZM5 10.2l6 3.4v6.8l-6-3.3v-6.9Zm14 0v6.9l-6 3.3v-6.8l6-3.4Z"/></svg>
+            </div>
+            <h2>Fertilizer Recommendation</h2>
+            <p>Get targeted nutrient guidance, usage instructions, and export-ready history.</p>
+            <span class="feature-cta">Open fertilizer</span>
+        </a>
+        <a class="feature card-link" href="{{ url_for('services.disease') }}">
+            <div class="feature-ic">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3c4.4 0 8 3.6 8 8 0 5.5-5.8 9.5-8 10-2.2-.5-8-4.5-8-10 0-4.4 3.6-8 8-8Zm0 2c-3.3 0-6 2.7-6 6 0 3.9 4.2 7.1 6 7.8 1.8-.7 6-3.9 6-7.8 0-3.3-2.7-6-6-6Zm-1 3h2v2h-2V8Zm0 4h2v5h-2v-5Z"/></svg>
+            </div>
+            <h2>Disease Detection</h2>
+            <p>Upload leaf images, see the preview, prediction, top classes, and treatment suggestions.</p>
+            <span class="feature-cta">Open disease</span>
+        </a>
+    </section>
+
+    <section class="panel info-panel" style="margin-top: 16px;">
+        <h2>Quick actions</h2>
+        <div class="cta-row">
+            <a class="btn btn-ghost" href="{{ url_for('services.crop_history') }}">Crop history</a>
+            <a class="btn btn-ghost" href="{{ url_for('services.fertilizer_history') }}">Fertilizer history</a>
+            <a class="btn btn-ghost" href="{{ url_for('services.disease_history') }}">Disease history</a>
+            <a class="btn btn-ghost" href="{{ url_for('auth.profile') }}">Update profile</a>
+        </div>
+        <p class="muted">Profile location is used for weather auto-fill on the crop page.</p>
+    </section>
+
+    <section class="card-grid" style="margin-top: 16px;">
+        <div class="card">
+            <h2>Your usage</h2>
+            <p class="subtitle">Crop: {{ stats.crop }} | Fertilizer: {{ stats.fertilizer }} | Disease: {{ stats.disease }}</p>
+        </div>
+        <div class="card">
+            <h2>Model status</h2>
+            <p class="subtitle">Crop model: {{ models.crop.version if models.crop else 'default/fallback' }}</p>
+            <p class="subtitle">Disease model: {{ models.disease.version if models.disease else 'default/fallback' }}</p>
+            {% if is_admin %}
+                <p class="muted"><a href="{{ url_for('admin.models') }}">Manage models</a></p>
+            {% endif %}
+        </div>
+        <div class="card">
+            <h2>Profile</h2>
+            <p class="subtitle">Location: {{ profile.location if profile.location else 'Not set' }}</p>
+            <p class="subtitle">Farm size (acres): {{ profile.farm_size_acres if profile.farm_size_acres is not none else '-' }}</p>
+        </div>
+    </section>
+
+    <section class="panel info-panel" style="margin-top: 16px;">
+        <h2>Latest activity</h2>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Type</th>
+                    <th>Time</th>
+                    <th>Summary</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Crop</td>
+                    <td>{{ last.crop[0].created_at if last.crop else '-' }}</td>
+                    <td>{{ last.crop[0].predicted_crop if last.crop else 'No crop predictions yet' }}</td>
+                </tr>
+                <tr>
+                    <td>Fertilizer</td>
+                    <td>{{ last.fertilizer.created_at if last.fertilizer else '-' }}</td>
+                    <td>{{ last.fertilizer.crop_name if last.fertilizer else 'No fertilizer recommendations yet' }}</td>
+                </tr>
+                <tr>
+                    <td>Disease</td>
+                    <td>{{ last.disease.created_at if last.disease else '-' }}</td>
+                    <td>{{ last.disease.disease if last.disease else 'No disease predictions yet' }}</td>
+                </tr>
+            </tbody>
+        </table>
+    </section>
+
+    <section class="panel info-panel" style="margin-top: 16px;">
+        <h2>My exports</h2>
+        <div class="cta-row">
+            <a class="btn btn-ghost" href="{{ url_for('services.my_history_export_csv') }}">Download my history (CSV)</a>
+            <a class="btn btn-ghost" href="{{ url_for('services.my_report_pdf') }}">Download my report (PDF)</a>
+        </div>
+        <p class="muted">PDF requires `reportlab` (see `requirements-report.txt`).</p>
+    </section>
+</main>
+{% endblock %}

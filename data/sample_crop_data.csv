@@ -1,0 +1,13 @@
+N,P,K,temperature,humidity,rainfall,ph,season,label
+90,42,43,20.9,82.0,202.9,6.5,Kharif,Rice
+85,40,45,23.5,78.0,180.0,6.2,Kharif,Rice
+35,20,18,24.3,55.0,80.0,6.8,Kharif,Maize
+50,25,20,27.1,60.0,90.0,6.9,Kharif,Maize
+45,25,25,30.0,50.0,70.0,7.4,Kharif,Cotton
+55,28,30,32.0,52.0,65.0,7.6,Kharif,Cotton
+20,35,25,25.0,55.0,50.0,6.6,Rabi,Groundnut
+25,30,28,23.5,50.0,45.0,6.9,Rabi,Groundnut
+40,25,30,28.0,50.0,45.0,6.8,Summer,Chilli
+45,28,35,30.0,48.0,40.0,6.7,Summer,Chilli
+45,30,30,22.0,55.0,55.0,6.5,Rabi,Tomato
+55,35,35,24.0,60.0,60.0,6.6,Rabi,Tomato

@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% block content %}
+<main class="page-shell">
+    <section class="hero hero-tight">
+        <p class="eyebrow">Admin</p>
+        <h1>User details</h1>
+        <p class="subtitle">{{ user.name }} ({{ user.email }})</p>
+        <div class="cta-row">
+            <a class="btn btn-ghost" href="{{ url_for('admin.users') }}">Back to users</a>
+            <a class="btn btn-ghost" href="{{ url_for('admin.user_export_csv', user_id=user.id) }}">Export CSV</a>
+            <a class="btn btn-ghost" href="{{ url_for('admin.user_report_pdf', user_id=user.id) }}">Download PDF</a>
+        </div>
+    </section>
+
+    <section class="card-grid">
+        <div class="card">
+            <h2>Counts</h2>
+            <p class="subtitle">Crop: {{ counts.crop }} | Fertilizer: {{ counts.fertilizer }} | Disease: {{ counts.disease }}</p>
+        </div>
+        <div class="card">
+            <h2>Profile</h2>
+            <p class="subtitle">Location: {{ profile.location if profile and profile.location else '-' }}</p>
+            <p class="subtitle">Farm size (acres): {{ profile.farm_size_acres if profile and profile.farm_size_acres is not none else '-' }}</p>
+        </div>
+        <div class="card">
+            <h2>Admin</h2>
+            <p class="subtitle">Is admin: {{ 'Yes' if user.is_admin else 'No' }}</p>
+            <p class="subtitle">Created: {{ user.created_at }}</p>
+        </div>
+    </section>
+
+    <section class="panel info-panel" style="margin-top:16px;">
+        <h2>Reset password</h2>
+        <form method="post" action="{{ url_for('admin.user_reset_password', user_id=user.id) }}" class="form">
+            <label>New password (min 6 chars)<input type="password" name="new_password" minlength="6" required></label>
+            <button class="btn btn-ghost" type="submit">Reset</button>
+        </form>
+        <p class="muted">This overwrites the user password immediately.</p>
+    </section>
+
+    <section class="panel info-panel" style="margin-top:16px;">
+        <h2>Danger zone</h2>
+        <form method="post" action="{{ url_for('admin.user_delete', user_id=user.id) }}">
+            <button class="btn btn-ghost" type="submit">Delete user and all history</button>
+        </form>
+    </section>
+</main>
+{% endblock %}
