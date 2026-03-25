@@ -10,6 +10,12 @@ services:
         generateValue: true
       - key: REQUIRE_EMAIL_OTP
         value: "1"
+      - key: BOOTSTRAP_ADMIN
+        value: "1"
+      - key: ADMIN_EMAIL
+        value: "admin@agrosmart.com"
+      - key: ADMIN_PASSWORD
+        value: "admin@1234"
       - key: EMAIL_DELIVERY
         value: "resend"
       - key: RESEND_API_KEY

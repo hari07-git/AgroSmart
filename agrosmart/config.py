@@ -54,3 +54,10 @@ class Config:
     # Demo-only: if email delivery fails, optionally show OTP on the verify screen.
     # Keep this OFF for real deployments.
     OTP_DEBUG_SHOW = os.getenv("OTP_DEBUG_SHOW", "0") in ("1", "true", "True")
+
+    # Admin bootstrap (demo convenience)
+    # For real production, set BOOTSTRAP_ADMIN=0 and manage admins manually.
+    BOOTSTRAP_ADMIN = os.getenv("BOOTSTRAP_ADMIN", "1") in ("1", "true", "True")
+    ADMIN_EMAIL = os.getenv("ADMIN_EMAIL", "admin@agrosmart.com").strip().lower()
+    ADMIN_PASSWORD = os.getenv("ADMIN_PASSWORD", "admin@1234")
+    ADMIN_NAME = os.getenv("ADMIN_NAME", "AgroSmart Admin")

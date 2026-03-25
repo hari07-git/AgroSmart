@@ -20,6 +20,14 @@ def create_app(config_overrides: dict | None = None) -> Flask:
 
         db.create_all()
         ensure_schema()
+        # Demo bootstrap: ensure admin exists for Render/submission deployments.
+        try:
+            from .services.bootstrap import ensure_bootstrap_admin
+
+            ensure_bootstrap_admin()
+        except Exception:
+            # Never crash startup due to bootstrap issues.
+            pass
 
     from .i18n import SUPPORTED_LANGS, get_lang, t
 
