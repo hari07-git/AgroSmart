@@ -29,7 +29,11 @@ class Config:
     MODEL_STORE = Path(os.getenv("MODEL_STORE", str(BASE_DIR / "models")))
 
     # Email (OTP verification)
-    EMAIL_DELIVERY = os.getenv("EMAIL_DELIVERY", "console")  # console | smtp
+    # Email delivery:
+    # - console: store in server logs (dev)
+    # - smtp: traditional SMTP (often blocked on PaaS)
+    # - resend: HTTPS email API (recommended for Render)
+    EMAIL_DELIVERY = os.getenv("EMAIL_DELIVERY", "console")  # console | smtp | resend
     SMTP_HOST = os.getenv("SMTP_HOST", "")
     SMTP_PORT = int(os.getenv("SMTP_PORT", "587"))
     SMTP_USER = os.getenv("SMTP_USER", "")
@@ -37,6 +41,10 @@ class Config:
     SMTP_FROM = os.getenv("SMTP_FROM", "no-reply@agrosmart.local")
     SMTP_TLS = os.getenv("SMTP_TLS", "1") not in ("0", "false", "False")
     SMTP_SSL = os.getenv("SMTP_SSL", "0") in ("1", "true", "True")
+
+    # Resend (HTTPS email API)
+    RESEND_API_KEY = os.getenv("RESEND_API_KEY", "")
+    RESEND_FROM = os.getenv("RESEND_FROM", SMTP_FROM)
 
     OTP_EXPIRES_MINUTES = int(os.getenv("OTP_EXPIRES_MINUTES", "10"))
     OTP_RESEND_COOLDOWN_SECONDS = int(os.getenv("OTP_RESEND_COOLDOWN_SECONDS", "60"))

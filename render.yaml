@@ -11,7 +11,11 @@ services:
       - key: REQUIRE_EMAIL_OTP
         value: "1"
       - key: EMAIL_DELIVERY
-        value: "smtp"
+        value: "resend"
+      - key: RESEND_API_KEY
+        sync: false
+      - key: RESEND_FROM
+        value: "AgroSmart <onboarding@resend.dev>"
       - key: UPLOAD_FOLDER
         value: "/var/data/uploads"
       - key: MODEL_STORE

@@ -10,6 +10,32 @@ from flask import current_app
 
 _OTP_RE = re.compile(r"\b(\d{6})\b")
 
+
+def _send_email_resend(to_email: str, subject: str, body: str) -> bool:
+    api_key = str(current_app.config.get("RESEND_API_KEY") or "").strip()
+    from_addr = str(current_app.config.get("RESEND_FROM") or "").strip()
+    if not api_key or not from_addr:
+        current_app.logger.warning("Resend not configured (RESEND_API_KEY/RESEND_FROM missing).")
+        return False
+
+    try:
+        import requests  # type: ignore
+
+        resp = requests.post(
+            "https://api.resend.com/emails",
+            headers={"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"},
+            json={"from": from_addr, "to": [to_email], "subject": subject, "text": body},
+            timeout=20,
+        )
+        if 200 <= resp.status_code < 300:
+            return True
+        current_app.logger.error("Resend email failed status=%s body=%s", resp.status_code, resp.text[:400])
+        return False
+    except Exception:
+        current_app.logger.exception("Failed to send email via Resend.")
+        return False
+
+
 def _ssl_context() -> ssl.SSLContext:
     # On some macOS Python installs, the system CA bundle may not be available.
     # Prefer certifi when installed (recommended for reliable SMTP TLS).
@@ -26,6 +52,7 @@ def send_email(to_email: str, subject: str, body: str) -> bool:
     Best-effort email delivery.
     - console: store in app.extensions['sent_emails'] and print to server logs
     - smtp: send using SMTP_* settings
+    - resend: send using Resend HTTPS API (recommended on Render where SMTP is blocked)
     """
     to_email = (to_email or "").strip().lower()
     if not to_email:
@@ -42,6 +69,9 @@ def send_email(to_email: str, subject: str, body: str) -> bool:
         except Exception:
             pass
         return True
+
+    if delivery == "resend":
+        return _send_email_resend(to_email=to_email, subject=subject, body=body)
 
     host = str(current_app.config.get("SMTP_HOST") or "")
     port = int(current_app.config.get("SMTP_PORT") or 587)
