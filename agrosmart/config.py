@@ -6,7 +6,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 
 class Config:
-    SECRET_KEY = "agrosmart-dev-key-change-me"
+    # In production, set SECRET_KEY via environment (Render/host dashboard).
+    SECRET_KEY = os.getenv("SECRET_KEY", "agrosmart-dev-key-change-me")
     MAX_CONTENT_LENGTH = 5 * 1024 * 1024
     # Allow overriding upload path for production persistent disks.
     UPLOAD_FOLDER = Path(os.getenv("UPLOAD_FOLDER", str(BASE_DIR / "uploads")))
@@ -17,7 +18,8 @@ class Config:
     _db = os.getenv("DATABASE_URL", _default_db).strip()
     # Normalize common provider URLs.
     if _db.startswith("postgres://"):
-        _db = _db.replace("postgres://", "postgresql+psycopg://", 1)
+        # Use SQLAlchemy default driver (psycopg2-binary) for best deploy compatibility.
+        _db = _db.replace("postgres://", "postgresql://", 1)
     if _db.startswith("mysql://"):
         _db = _db.replace("mysql://", "mysql+pymysql://", 1)
     SQLALCHEMY_DATABASE_URI = _db

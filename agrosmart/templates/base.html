@@ -56,6 +56,28 @@
         </div>
     </header>
     {% block content %}{% endblock %}
+    <div class="chatbot">
+        <button class="chatbot-fab" type="button" aria-label="Open chatbot" aria-expanded="false" data-chatbot-toggle>
+            Chat
+        </button>
+        <section class="chatbot-panel" data-chatbot-panel hidden>
+            <div class="chatbot-head">
+                <p class="chatbot-title">AgroSmart Assistant</p>
+                <p class="chatbot-sub">Basic help. For deep support: <a href="mailto:agrosmartz7@gmail.com">agrosmartz7@gmail.com</a></p>
+            </div>
+            <div class="chatbot-quick">
+                <button type="button" class="pill" data-chatbot-quick="How does crop recommendation work?">Crop</button>
+                <button type="button" class="pill" data-chatbot-quick="How does fertilizer guidance work?">Fertilizer</button>
+                <button type="button" class="pill" data-chatbot-quick="How to upload leaf image for disease detection?">Disease</button>
+                <button type="button" class="pill" data-chatbot-quick="I am not receiving OTP email.">OTP</button>
+            </div>
+            <div class="chatbot-messages" data-chatbot-messages></div>
+            <form class="chatbot-form" data-chatbot-form>
+                <input class="chatbot-input" data-chatbot-input placeholder="Type your question..." autocomplete="off" />
+                <button class="btn btn-small btn-primary" type="submit">Send</button>
+            </form>
+        </section>
+    </div>
     <footer class="footer">
         <div class="footer-inner">
             <div class="footer-grid">
@@ -93,6 +115,7 @@
     <script src="{{ url_for('static', filename='voice.js') }}"></script>
     <script src="{{ url_for('static', filename='weather.js') }}"></script>
     <script src="{{ url_for('static', filename='theme.js') }}"></script>
+    <script src="{{ url_for('static', filename='chatbot.js') }}"></script>
     <script>
     (() => {
       const btn = document.querySelector('[data-nav-toggle]');

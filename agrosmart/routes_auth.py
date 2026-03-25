@@ -84,6 +84,8 @@ def register_post():
         flash("Registration successful. Please verify the OTP sent to your email.", "success")
         if otp_info.get("sent"):
             flash("OTP sent. Check your email inbox (or server console in dev).", "info")
+        else:
+            flash("OTP email failed to send. Please check email settings and click Resend OTP.", "error")
         return redirect(url_for("auth.verify_email"))
 
     session["user_id"] = user.id
@@ -264,6 +266,8 @@ def verify_email_resend():
     info = _issue_email_otp(user, allow_cooldown=True, force_new=True)
     if not info.get("sent") and info.get("cooldown"):
         flash("Please wait a minute before requesting a new OTP.", "error")
+    elif not info.get("sent"):
+        flash("Failed to send OTP email. Check email settings and try again. (Also check Spam/All Mail.)", "error")
     else:
         flash("OTP resent. Check your email inbox (or server console in dev).", "success")
     return redirect(url_for("auth.verify_email"))
@@ -307,17 +311,17 @@ def _issue_email_otp(user: User, allow_cooldown: bool = False, force_new: bool =
     )
     db.session.add(otp)
 
+    sent = False
     try:
-        send_registration_otp(user.email, otp_code)
+        sent = bool(send_registration_otp(user.email, otp_code))
     except Exception:
-        # best-effort; do not break registration flow
-        pass
+        sent = False
 
     # Return OTP only in dev modes (console/testing) for usability.
     debug_code = None
     if current_app.config.get("TESTING") or str(current_app.config.get("EMAIL_DELIVERY") or "").lower() == "console":
         debug_code = otp_code
-    return {"sent": True, "cooldown": False, "debug_code": debug_code}
+    return {"sent": sent, "cooldown": False, "debug_code": debug_code}
 
 
 @bp.get("/avatar")

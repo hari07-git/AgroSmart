@@ -21,7 +21,7 @@ def _ssl_context() -> ssl.SSLContext:
         return ssl.create_default_context()
 
 
-def send_email(to_email: str, subject: str, body: str) -> None:
+def send_email(to_email: str, subject: str, body: str) -> bool:
     """
     Best-effort email delivery.
     - console: store in app.extensions['sent_emails'] and print to server logs
@@ -29,7 +29,7 @@ def send_email(to_email: str, subject: str, body: str) -> None:
     """
     to_email = (to_email or "").strip().lower()
     if not to_email:
-        return
+        return False
 
     delivery = str(current_app.config.get("EMAIL_DELIVERY") or "console").lower()
     if current_app.config.get("TESTING") or delivery == "console":
@@ -41,7 +41,7 @@ def send_email(to_email: str, subject: str, body: str) -> None:
             current_app.logger.info("Email(console) to=%s subject=%s body=%s", to_email, subject, body)
         except Exception:
             pass
-        return
+        return True
 
     host = str(current_app.config.get("SMTP_HOST") or "")
     port = int(current_app.config.get("SMTP_PORT") or 587)
@@ -54,7 +54,7 @@ def send_email(to_email: str, subject: str, body: str) -> None:
     if not host:
         # Misconfigured; do not crash the request.
         current_app.logger.warning("SMTP_HOST not set; skipping email delivery.")
-        return
+        return False
 
     msg = EmailMessage()
     msg["From"] = from_addr
@@ -79,16 +79,19 @@ def send_email(to_email: str, subject: str, body: str) -> None:
     except Exception:
         # Do not leak SMTP errors to the user; log for dev.
         current_app.logger.exception("Failed to send email via SMTP.")
+        return False
+
+    return True
 
 
-def send_registration_otp(to_email: str, otp_code: str) -> None:
+def send_registration_otp(to_email: str, otp_code: str) -> bool:
     subject = "AgroSmart OTP Verification"
     body = (
         "Your AgroSmart registration OTP is:\n\n"
         f"{otp_code}\n\n"
         "This OTP expires in a few minutes. If you did not request this, ignore this email."
     )
-    send_email(to_email, subject, body)
+    return send_email(to_email, subject, body)
 
 
 def extract_otp_from_last_email() -> str | None:
