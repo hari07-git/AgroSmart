@@ -15,3 +15,10 @@ data/agrosmart_*dataset/
 docs/disease_eval*.json
 docs/dataset_preview.png
 AgroSmart_Full_Code.docx
+
+# Keep background assets local unless you own the license (Render/static still works locally).
+static/bg/*.jpg
+static/bg/*.jpeg
+static/bg/*.png
+static/bg/*.webp
+static/bg/*.avif

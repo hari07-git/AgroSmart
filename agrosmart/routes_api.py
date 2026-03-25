@@ -155,6 +155,75 @@ def weather_current():
     return jsonify(data)
 
 
+@bp.post("/chatbot")
+def chatbot_reply():
+    payload = request.get_json(silent=True) or {}
+    msg = str(payload.get("message") or "").strip()
+    if not msg:
+        return jsonify({"reply": "Ask me something about AgroSmart (crop, fertilizer, disease, OTP, admin)."}), 200
+
+    text = msg.lower()
+
+    def _contains(*words: str) -> bool:
+        return any(w in text for w in words)
+
+    # Simple, deterministic FAQ bot for demo use. For deeper support, route to admin email.
+    if _contains("admin", "administrator"):
+        return jsonify(
+            {
+                "reply": "Admin login is available from the top menu. If you need admin access or help, contact agrosmartz7@gmail.com.",
+            }
+        )
+    if _contains("otp", "verify", "verification", "email not", "mail not", "not receiving"):
+        return jsonify(
+            {
+                "reply": "Members receive a 6-digit OTP on registration. Check Spam/All Mail, then click 'Resend OTP'. If you still do not receive it, contact agrosmartz7@gmail.com.",
+            }
+        )
+    if _contains("crop", "recommend", "recommendation", "npk", "ph", "season"):
+        return jsonify(
+            {
+                "reply": "Crop Recommendation uses N, P, K, pH, season, and weather values (temperature, humidity, rainfall) to suggest a best-fit crop. Fill the form and submit to get the result and history.",
+            }
+        )
+    if _contains("fertilizer", "urea", "dap", "mop", "npk"):
+        return jsonify(
+            {
+                "reply": "Fertilizer Guidance uses your crop name plus N, P, K values and returns a nutrient-focused plan with steps. Use the Fertilizer service page to generate and save recommendations.",
+            }
+        )
+    if _contains("disease", "leaf", "spot", "blight", "rust", "mildew"):
+        return jsonify(
+            {
+                "reply": "Disease Detection works by uploading a clear leaf photo. The app shows the uploaded image, top predictions, confidence, plus treatment and prevention suggestions. If results look uncertain, retake a clearer photo and try again.",
+            }
+        )
+    if _contains("export", "pdf", "csv", "history", "report"):
+        return jsonify(
+            {
+                "reply": "You can view your history from Dashboard and export CSV/PDF reports. If export fails or you need a full report, contact agrosmartz7@gmail.com.",
+            }
+        )
+    if _contains("language", "telugu", "hindi", "english"):
+        return jsonify(
+            {
+                "reply": "Use the Language dropdown in the top bar to switch English/Telugu/Hindi across the site.",
+            }
+        )
+    if _contains("weather", "openweather", "location"):
+        return jsonify(
+            {
+                "reply": "Weather auto-fill can use your Profile location to fetch current weather. Set your location in Profile, then use the Weather button on forms (if available).",
+            }
+        )
+
+    return jsonify(
+        {
+            "reply": "I can help with basic AgroSmart questions (crop, fertilizer, disease, OTP, exports, language). For deeper help, contact agrosmartz7@gmail.com.",
+        }
+    )
+
+
 def _to_float(value) -> float:
     try:
         return float(value) if value not in (None, "") else 0.0

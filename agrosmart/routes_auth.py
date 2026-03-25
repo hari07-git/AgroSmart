@@ -110,7 +110,8 @@ def login_post():
         return redirect(url_for("auth.login"))
 
     require_otp = bool(current_app.config.get("REQUIRE_EMAIL_OTP", False))
-    if require_otp and not bool(getattr(user, "email_verified", False)):
+    # Admin accounts should never be blocked by member OTP requirements.
+    if require_otp and (not bool(getattr(user, "email_verified", False))) and (not bool(getattr(user, "is_admin", False))):
         session.pop("user_id", None)
         session["pending_user_id"] = user.id
         _issue_email_otp(user, allow_cooldown=True)

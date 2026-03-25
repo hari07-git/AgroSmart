@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from flask import Flask
 
 from .config import Config
@@ -60,6 +62,12 @@ def create_app(config_overrides: dict | None = None) -> Flask:
             user = db.session.get(User, int(user_id))
             is_admin = bool(user and user.is_admin)
 
-        return {"t": t, "lang": get_lang(), "supported_langs": SUPPORTED_LANGS, "is_admin": is_admin}
+        return {
+            "t": t,
+            "lang": get_lang(),
+            "supported_langs": SUPPORTED_LANGS,
+            "is_admin": is_admin,
+            "current_year": datetime.now().year,
+        }
 
     return app

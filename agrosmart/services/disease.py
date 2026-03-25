@@ -69,17 +69,31 @@ def analyze_leaf_image(image_path: Path) -> dict:
         if confidence and confidence < threshold:
             status = "Low confidence prediction"
             healthy_prob = 0.0
-            top_prob = 0.0
+            best_non_healthy_prob = 0.0
+            best_non_healthy_label = ""
             if top:
-                top_prob = float(top[0].get("prob", 0.0) or 0.0)
                 for item in top:
-                    if "healthy" in str(item.get("label", "")).lower():
-                        healthy_prob = float(item.get("prob", 0.0) or 0.0)
-                        break
+                    label = str(item.get("label", "")).lower()
+                    prob = float(item.get("prob", 0.0) or 0.0)
+                    if "healthy" in label:
+                        healthy_prob = prob
+                        continue
+                    if prob > best_non_healthy_prob:
+                        best_non_healthy_prob = prob
+                        best_non_healthy_label = str(item.get("label", "") or "")
 
-            # If the image strongly looks healthy, prefer a healthy result over "Uncertain".
+            # Only allow a "Healthy" override when:
+            # 1) the image looks healthy AND
+            # 2) the model also leans healthy (healthy prob clearly above best disease prob).
+            #
+            # This prevents cases where diseased leaves get "No treatment needed" just because
+            # the model is uncertain and healthy is barely the top class.
             try:
-                if looks_healthy(image_path):
+                margin = healthy_prob - best_non_healthy_prob
+                allow_healthy_override = looks_healthy(image_path) and (
+                    healthy_prob >= 0.55 or margin >= 0.12
+                )
+                if allow_healthy_override:
                     details = _treatment_for_label("healthy")
                     return {
                         "status": "Healthy (heuristic)",
@@ -96,7 +110,11 @@ def analyze_leaf_image(image_path: Path) -> dict:
                 pass
 
             # Otherwise, show the most likely class (low confidence).
-            likely_label = str(top[0].get("label", disease_label)) if top else disease_label
+            likely_label = (
+                best_non_healthy_label
+                or (str(top[0].get("label", "")) if top else "")
+                or disease_label
+            )
             details = _treatment_for_label(likely_label)
             return {
                 "status": status,
