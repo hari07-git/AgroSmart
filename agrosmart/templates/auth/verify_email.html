@@ -5,6 +5,9 @@
     <section class="panel auth-panel">
         <h1>Verify email</h1>
         <p class="subtitle">Enter the 6-digit OTP sent to <strong>{{ email }}</strong>.</p>
+        {% if show_demo_otp and demo_otp %}
+            <p class="muted"><strong>Demo OTP:</strong> {{ demo_otp }} (email delivery blocked; for submission demo only)</p>
+        {% endif %}
 
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
@@ -32,4 +35,3 @@
     </section>
 </main>
 {% endblock %}
-

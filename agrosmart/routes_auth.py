@@ -81,6 +81,9 @@ def register_post():
     if require_otp:
         session.pop("user_id", None)
         session["pending_user_id"] = user.id
+        # Demo-only: stash OTP in session to show on verify screen when enabled.
+        if otp_info.get("debug_code") and bool(current_app.config.get("OTP_DEBUG_SHOW", False)):
+            session["otp_debug_code"] = str(otp_info.get("debug_code"))
         flash("Registration successful. Please verify the OTP sent to your email.", "success")
         if otp_info.get("sent"):
             flash("OTP sent. Check your email inbox (or server console in dev).", "info")
@@ -191,7 +194,9 @@ def verify_email():
         session["user_id"] = user.id
         session.pop("pending_user_id", None)
         return redirect(url_for("main.dashboard"))
-    return render_template("auth/verify_email.html", email=user.email)
+    show_demo = bool(current_app.config.get("OTP_DEBUG_SHOW", False))
+    demo_code = session.get("otp_debug_code") if show_demo else None
+    return render_template("auth/verify_email.html", email=user.email, demo_otp=demo_code, show_demo_otp=show_demo)
 
 
 @bp.post("/verify-email")
@@ -244,6 +249,7 @@ def verify_email_post():
 
     session["user_id"] = user.id
     session.pop("pending_user_id", None)
+    session.pop("otp_debug_code", None)
     flash("Email verified. Welcome!", "success")
     return redirect(url_for("main.dashboard"))
 
@@ -270,6 +276,12 @@ def verify_email_resend():
         flash("Failed to send OTP email. Check email settings and try again. (Also check Spam/All Mail.)", "error")
     else:
         flash("OTP resent. Check your email inbox (or server console in dev).", "success")
+
+    # Demo-only: stash OTP in session to show on verify screen when enabled.
+    demo_code = info.get("debug_code")
+    if demo_code and bool(current_app.config.get("OTP_DEBUG_SHOW", False)):
+        session["otp_debug_code"] = str(demo_code)
+
     return redirect(url_for("auth.verify_email"))
 
 
@@ -320,6 +332,9 @@ def _issue_email_otp(user: User, allow_cooldown: bool = False, force_new: bool =
     # Return OTP only in dev modes (console/testing) for usability.
     debug_code = None
     if current_app.config.get("TESTING") or str(current_app.config.get("EMAIL_DELIVERY") or "").lower() == "console":
+        debug_code = otp_code
+    # Demo-only: if explicitly enabled and sending failed, allow showing OTP in UI.
+    if (not sent) and bool(current_app.config.get("OTP_DEBUG_SHOW", False)):
         debug_code = otp_code
     return {"sent": sent, "cooldown": False, "debug_code": debug_code}
 

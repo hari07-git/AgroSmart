@@ -51,3 +51,6 @@ class Config:
     OTP_MAX_ATTEMPTS = int(os.getenv("OTP_MAX_ATTEMPTS", "5"))
     # Enable OTP by default for real deployments; tests override this to False.
     REQUIRE_EMAIL_OTP = os.getenv("REQUIRE_EMAIL_OTP", "1") in ("1", "true", "True")
+    # Demo-only: if email delivery fails, optionally show OTP on the verify screen.
+    # Keep this OFF for real deployments.
+    OTP_DEBUG_SHOW = os.getenv("OTP_DEBUG_SHOW", "0") in ("1", "true", "True")
