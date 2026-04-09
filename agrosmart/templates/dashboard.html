@@ -105,7 +105,7 @@
             <a class="btn btn-ghost" href="{{ url_for('services.my_history_export_csv') }}">Download my history (CSV)</a>
             <a class="btn btn-ghost" href="{{ url_for('services.my_report_pdf') }}">Download my report (PDF)</a>
         </div>
-        <p class="muted">PDF requires `reportlab` (see `requirements-report.txt`).</p>
+        <p class="muted">If PDF download fails, install `reportlab` (included in `requirements.txt`).</p>
     </section>
 </main>
 {% endblock %}
